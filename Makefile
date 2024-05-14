@@ -3,7 +3,7 @@ MACH=cortex-m4
 LinkerScript=stm32_ls.ld
 
 CFLAGS= -c -mcpu=$(MACH) -mthumb -Wall -O0
-LDFLAGS= -nostdlib -T $(LinkerScript)
+LDFLAGS= -nostdlib -T $(LinkerScript) -Wl,-Map=Debug/run.map
 
 SRC_PATH=Core/Src
 STUP_PATH=Core/Startup
@@ -33,3 +33,6 @@ Debug/run.elf: $(OBJ)
 	
 clean:
 	rm -rf Debug/Core/Startup/*.o Debug/Core/Src/*.o Debug/*.elf
+
+load:
+	openocd -f board/stm32f4discovery.cfg

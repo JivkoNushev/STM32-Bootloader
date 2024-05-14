@@ -7,6 +7,13 @@
 
 #define STACK_START SRAM_END
 
+extern uint32_t _etext;
+extern uint32_t _sdata;
+extern uint32_t _edata;
+extern uint32_t _sbss;
+extern uint32_t _ebss;
+
+int main(void);
 void Reset_Handler(void);
 
 void NMI_Handler 					(void) __attribute__ ((weak, alias("Default_Handler")));
@@ -210,5 +217,26 @@ void Default_Handler(void)
 
 void Reset_Handler(void)
 {
-	
+	// for(uint8_t* dSrc = (uint8_t*)&_etext, *dDst = (uint8_t*)&_sdata; dDst < (uint8_t*)&_edata;)
+	// 	*dDst++ = *dSrc++;
+
+	// for(uint8_t* bDst = (uint8_t*)&_sbss; bDst < (uint8_t*)&_ebss;)
+	// 	*bDst++ = 0;
+
+	uint32_t data_size = (uint32_t)&_edata - (uint32_t)&_sdata;
+
+	uint8_t* pSrc = (uint8_t*)&_etext;
+	uint8_t* pDst = (uint8_t*)&_sdata;
+
+	for(uint32_t i = 0; i < data_size; i++)
+		*pDst++ = *pSrc++;
+
+	uint32_t bss_size = (uint32_t)&_ebss - (uint32_t)&_sbss;
+
+	pDst = (uint8_t*)&_sbss;
+
+	for(uint32_t i = 0; i < bss_size; i++)
+		*pDst++ = 0;
+
+	main();
 }
